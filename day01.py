@@ -3,7 +3,7 @@ from math import prod
 from typing import Iterable
 
 
-def get_answer(d: Iterable[int], r: int):
+def get_answer(d: Iterable[int], r: int) -> int:
     return next(prod(d) for d in combinations(d, r) if sum(d) == 2020)
 
 
