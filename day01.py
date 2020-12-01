@@ -1,9 +1,9 @@
-from typing import List
 from itertools import combinations
 from math import prod
+from typing import Iterable
 
 
-def get_answer(d: List[int], r: int):
+def get_answer(d: Iterable[int], r: int):
     return next(prod(d) for d in combinations(d, r) if sum(d) == 2020)
 
 
