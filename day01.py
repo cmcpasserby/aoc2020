@@ -1,10 +1,10 @@
 from typing import List
-from itertools import permutations
+from itertools import combinations
 from math import prod
 
 
 def get_answer(data: List[int], r: int):
-    return next(prod(d) for d in permutations(data, r) if sum(d) == 2020)
+    return next(prod(d) for d in combinations(data, r) if sum(d) == 2020)
 
 
 def main():
