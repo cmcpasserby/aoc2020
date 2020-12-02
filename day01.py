@@ -8,6 +8,6 @@ def get_answer(d: Iterable[int], r: int) -> int:
 
 
 with open("inputs/day01.txt", 'r') as f:
-    data = [int(i) for i in f.readlines()]
+    data = [int(i) for i in f]
     print(f"part a: {get_answer(data, 2)}")
     print(f"part b: {get_answer(data, 3)}")
