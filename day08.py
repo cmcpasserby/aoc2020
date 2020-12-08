@@ -4,7 +4,6 @@ from typing import Dict, Callable, Tuple, List
 def machine(ins: List[Tuple[str, int]]):
     pointer = 0
     acc = 0
-    visited = set()
 
     def op_nop(_: int):
         nonlocal pointer
@@ -24,6 +23,8 @@ def machine(ins: List[Tuple[str, int]]):
         "acc": op_acc,
         "jmp": op_jmp,
     }
+
+    visited = set()
 
     while pointer < len(ins):
         if pointer in visited:
@@ -52,8 +53,8 @@ with open("inputs/day08.txt", 'r') as f:
             new_instructions = instructions[:]
             new_instructions[i] = (new_op, arg)
 
-            acc = 0
             try:
+                acc = 0
                 for a in machine(new_instructions):
                     acc = a
                 print(f"part b: {acc}")
