@@ -1,40 +1,47 @@
-from typing import Dict, Callable, Tuple, List
-import inspect
+from typing import Dict, Callable, Tuple, List, Set
 
 
-def machine(ins: List[Tuple[str, int]]):
-    pointer = 0
-    acc = 0
+class Machine(object):
+    def __init__(self, ins: List[Tuple[str, int]]):
+        self.ptr: int = 0
+        self.acc: int = 0
+        self.visited: Set[int] = set()
 
-    def op_nop(_: int):
-        nonlocal pointer
-        pointer += 1
+        self.instructions = ins
+        self.ops: Dict[str, Callable[[int], None]] = {
+            "nop": self.op_nop,
+            "acc": self.op_acc,
+            "jmp": self.op_jmp,
+        }
 
-    def op_acc(x: int):
-        nonlocal acc, pointer
-        acc += x
-        pointer += 1
+    def op_nop(self, _: int):
+        self.ptr += 1
 
-    def op_jmp(x: int):
-        nonlocal pointer
-        pointer += x
+    def op_acc(self, x: int):
+        self.acc += x
+        self.ptr += 1
 
-    ops: Dict[str, Callable[[int], None]] = {
-        "nop": op_nop,
-        "acc": op_acc,
-        "jmp": op_jmp,
-    }
+    def op_jmp(self, x: int):
+        self.ptr += x
 
-    visited = set()
+    def __iter__(self):
+        return self
 
-    while pointer < len(ins):
-        if pointer in visited:
+    def __len__(self):
+        return len(self.instructions)
+
+    def __next__(self):
+        if self.ptr >= len(self):
+            raise StopIteration()
+
+        if self.ptr in self.visited:
             raise ValueError("infinite loop detected")
-        visited.add(pointer)
+        self.visited.add(self.ptr)
 
-        op, arg = ins[pointer]
-        ops[op](arg)
-        yield acc
+        op, arg = self.instructions[self.ptr]
+        self.ops[op](arg)
+
+        return self.acc
 
 
 with open("inputs/day08.txt", 'r') as f:
@@ -43,7 +50,7 @@ with open("inputs/day08.txt", 'r') as f:
 
     try:
         acc = 0
-        for i in machine(instructions[:]):
+        for i in Machine(instructions[:]):
             acc = i
     except ValueError:
         print(f"part a: {acc}")
@@ -56,7 +63,7 @@ with open("inputs/day08.txt", 'r') as f:
 
         try:
             acc = 0
-            for a in machine(new_instructions):
+            for a in Machine(new_instructions):
                 acc = a
             print(f"part b: {acc}")
         except ValueError:
