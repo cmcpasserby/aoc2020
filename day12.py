@@ -1,12 +1,3 @@
-from math import radians, cos, sin
-
-_TEST_DATA = """F10
-N3
-F7
-R90
-F11"""
-
-
 DIRECTIONS = {
     "N": 1j,
     "E": 1+0j,
@@ -26,6 +17,7 @@ ROTATIONS = {
 
 with open("inputs/day12.txt", 'r') as f:
     inputs = [(i[0], int(i[1:])) for i in f.read().splitlines()]
+    # inputs = [(i[0], int(i[1:])) for i in _TEST_DATA.splitlines()]
 
     def part_a():
         pos = 0j
