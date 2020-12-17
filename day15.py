@@ -7,6 +7,7 @@ iter_count_b = 30_000_000
 
 def solve() -> tuple[int, int]:
     last = inputs[-1]
+
     seen = array('I', [0]) * iter_count_b
     for i, v in enumerate(inputs, 1):
         seen[v] = i
