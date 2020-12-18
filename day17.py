@@ -38,7 +38,6 @@ def get_neighbours(start_vector: Vector, dimensions: int) -> Iterable[Vector]:
     return (start_vector + Vector(*d) for d in product(range(-1, 2), repeat=dimensions) if any(d))
 
 
-@timer(1)
 def solve(dimensions: int) -> int:
     grid = parse_grid()
 
