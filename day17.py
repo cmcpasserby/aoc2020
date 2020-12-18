@@ -37,18 +37,18 @@ def get_neighbours(start_vector: Vector, dimensions: int) -> Iterable[Vector]:
     return (start_vector + Vector(*d) for d in product(range(-1, 2), repeat=dimensions) if any(d))
 
 
-def part_a() -> int:
+def solve(dimensions: int) -> int:
     grid = parse_grid()
 
     for _ in range(6):
         # expand grid out around active
         for vec in [k for k, v in grid.items() if v]:
-            grid |= {i: True for i in get_neighbours(vec, 3) if grid[i]}
+            grid |= {i: True for i in get_neighbours(vec, dimensions) if grid[i]}
 
         new_grid = grid.copy()
 
         for vec, value in new_grid.items():
-            active_count = sum(grid[i] for i in get_neighbours(vec, 3))
+            active_count = sum(grid[i] for i in get_neighbours(vec, dimensions))
 
             if value and active_count not in (2, 3):
                 new_grid[vec] = False
@@ -57,9 +57,9 @@ def part_a() -> int:
 
         grid = defaultdict(bool, {k: v for k, v in new_grid.items() if v})
 
-    print(len(grid))
     return sum(grid.values())
 
 
-print(f"part a: {part_a()}")
+print(f"part a: {solve(3)}")
+print(f"part b: {solve(4)}")
 
