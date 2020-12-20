@@ -16,7 +16,7 @@ def parse_inputs() -> tuple[dict[int, str], list[str]]:
 
 
 def build_patterns(rules: dict[int, str], node: int, depth: int) -> str:
-    if depth > 20:
+    if depth > 13:  # stops us from blowing the stack, started with a lower number then increased till the result became stable
         return ""
 
     result = "("
