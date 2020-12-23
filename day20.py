@@ -9,12 +9,8 @@ class Tile(object):
         self.data: TileData = data
         self.connections: set[Tile] = set()
 
-    def __str__(self) -> str:
-        result = []
-        for x in self.data:
-            item = "".join("#" if y else "." for y in x)
-            result.append(item)
-        return "\n".join(result)
+    def __repr__(self) -> str:
+        return f"id: {self.index}, connections: {len(self.connections)}"
 
     def __eq__(self, other) -> bool:
         if isinstance(other, type(self)):
@@ -33,11 +29,8 @@ class Tile(object):
     def flip_v(self):
         self.data = self.data[::-1]
 
-    def rotate_cw(self):
+    def rotate(self):
         self.data = tuple(zip(*self.data[::-1]))
-
-    def rotate_ccw(self):
-        self.data = tuple(zip(*self.data))[::-1]
 
     @property
     def top(self) -> tuple[bool]:
@@ -82,20 +75,19 @@ def can_match(lhs: Tile, rhs: Tile) -> bool:
             return True
 
         for _ in range(4):
-            other.rotate_cw()
+            other.rotate()
             if start_edge in other.edges:
                 return True
 
-        # TODO: might need to nest these checks
-        for _ in range(2):
-            other.flip_h()
-            if start_edge in other.edges:
-                return True
+            for _ in range(2):
+                other.flip_h()
+                if start_edge in other.edges:
+                    return True
 
-        for _ in range(2):
-            other.flip_v()
-            if start_edge in other.edges:
-                return True
+                for _ in range(2):
+                    other.flip_v()
+                    if start_edge in other.edges:
+                        return True
 
 
 def find_connections(tiles: dict[int, Tile]):
@@ -108,10 +100,45 @@ def find_connections(tiles: dict[int, Tile]):
                 outer_t.connections.add(inner_t)
 
 
+def get_corner_edges(corner: Tile) -> list[list[Tile]]:
+    if len(corner.connections) != 2:
+        raise ValueError(f"starting node must have 2 connections input node has {len(corner.connections)} connections")
+
+    edges = []
+
+    for d in corner.connections:
+        current: Tile = d
+        edge: list[Tile] = [corner]
+
+        while len(current.connections) == 3:
+            edge.append(current)
+            current = next((i for i in current.connections if len(i.connections) < 4 and i not in edge))
+        edge.append(current)
+
+        edges.append(edge)
+
+    return edges
+
+
 def solve() -> tuple[int, int]:
     tiles = parse_inputs()
     find_connections(tiles)
-    return prod(i.index for i in tiles.values() if len(i.connections) == 2), 0
+    corners = [i for i in tiles.values() if len(i.connections) == 2]
+
+    left_edge, top_edge = get_corner_edges(corners[0])
+
+    rows = [top_edge]
+
+    for row_index, current in enumerate(left_edge[1:], 1):
+        rows.append([current])
+
+        current: Tile = next(n for n in current.connections if len(n.connections) == 4)
+
+        while len(current.connections) == 4:
+            rows[row_index].append(current)
+            current: Tile = next(i for i in current.connections if any(n != current and n in rows[row_index - 1] for n in i.connections))
+
+    return prod(i.index for i in corners), 0
 
 
 a, b = solve()
