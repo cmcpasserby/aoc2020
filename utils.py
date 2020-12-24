@@ -1,5 +1,7 @@
 from time import perf_counter
 from functools import wraps
+from itertools import tee, islice
+from typing import Iterable, Iterator, TypeVar
 
 
 def timer(count: int = 1):
@@ -26,3 +28,11 @@ def is_prime(x: int) -> bool:
             return False
 
     return True
+
+
+T = TypeVar('T')
+
+
+def grouper(iterable: Iterable, n: int) -> Iterator[tuple[T, ...]]:
+    slices = (islice(it, i, None) for i, it in enumerate(tee(iterable, n)))
+    return zip(*slices)
