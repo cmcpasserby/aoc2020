@@ -73,7 +73,7 @@ def parse_inputs() -> dict[int, Tile]:
         return tiles
 
 
-def can_match(lhs: Tile, rhs: Tile) -> bool:
+def match_to(lhs: Tile, rhs: Tile) -> bool:
     for start_edge in lhs.edges:
         other = rhs
 
@@ -102,7 +102,7 @@ def find_connections(tiles: dict[int, Tile]):
             if lhs == rhs:
                 continue
 
-            if can_match(lhs, rhs):
+            if match_to(lhs, rhs):
                 lhs.connections.add(rhs)
 
 
@@ -142,6 +142,13 @@ def build_map(left_edge: Tile, top_edge: Tile) -> list[list[Tile]]:
     return rows
 
 
+def orient_map(tile_map: list[list[Tile]]):
+    for row, next_row in grouper(tile_map, 2):
+        for left, right in grouper(row, 2):
+            match_to(left, right)
+        match_to(row[0], next_row[0])
+
+
 def solve() -> tuple[int, int]:
     tiles = parse_inputs()
     find_connections(tiles)
@@ -149,6 +156,11 @@ def solve() -> tuple[int, int]:
 
     left_edge, top_edge = get_corner_edges(corners[0])
     tile_map = build_map(left_edge, top_edge)
+    orient_map(tile_map)
+
+    # TODO: remove borders
+    # TODO: orient tile_map
+    # TODO: sea_monsters
 
     return prod(i.index for i in corners), 0
 
